@@ -1,68 +1,36 @@
 import React from 'react'
 import { FlatList, View, Text, StyleSheet, Dimensions, TouchableOpacity} from 'react-native'
+import { connect } from 'react-redux';
 import { white, black, gray } from '../utils/colors'
 
-class DeckList extends React.Component {
-    state = {
-        data: [{
-            key: 1,
-            DeckName: 'first Deck',
-            CardsNumber: '20'
-        },
-        {
-            key: 2,
-            DeckName: 'second Deck',
-            CardsNumber: '12'
-        }, {
-            key: 3,
-            DeckName: 'first Deck',
-            CardsNumber: '20'
-        },
-        {
-            key: 4,
-            DeckName: 'second Deck',
-            CardsNumber: '12'
-        }, {
-            key: 5,
-            DeckName: 'first Deck',
-            CardsNumber: '20'
-        },
-        {
-            key: 6,
-            DeckName: 'second Deck',
-            CardsNumber: '12'
-        }, {
-            key: 7,
-            DeckName: 'first Deck',
-            CardsNumber: '20'
-        },
-        {
-            key: 8,
-            DeckName: 'second Deck',
-            CardsNumber: '12'
-        }]
-    }
-
-
-    
+class DeckList extends React.Component {    
     render() {
+        
+        if(this.props.decks && Object.keys(this.props.decks).length <= 0){
+            return(
+                <View style={styles.container}>
+                    <Text style={styles.emptyDecksText}> There is no decks yet!</Text>
+                </View>
+            )
+        }
+
         return (
             <View style={styles.container}>
                 <FlatList
-                    
                     style={styles.listStyle}
-                    keyExtractor={(item) => item.key.toString()}
-                    data={this.state.data}
+                    keyExtractor={(item) => item.id.toString()}
+                    data={Object.values(this.props.decks)}
                     renderItem={({ item }) => {
                         return (
                             (<TouchableOpacity
                              style={styles.item}
                              onPress={() => this.props.navigation.navigate(
                                 'Deck',
-                                { DeckName:item.DeckName }
+                                {   deckId:item.id,
+                                }
                               )}>
-                                <Text style={styles.mainText} >{item.DeckName}</Text>
-                                <Text style={styles.subText}>{item.CardsNumber}</Text>
+                                <Text style={styles.mainText} >{item.name}</Text>
+                                <Text style={styles.subText}>{item.cards.length}</Text>
                             </TouchableOpacity>)
                         )
                     }}
@@ -79,7 +47,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: white,
         justifyContent:'center',
-        alignItems:'stretch',
+        alignItems:'center',
     },
     listStyle:{
         flex:1,
@@ -103,8 +71,26 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     item:{
-        borderWidth: 0.2,
+        borderTopWidth:0.2,
+        borderBottomWidth: 0.2,
         borderColor: gray,
+    },
+    emptyDecksText:{
+        marginTop:40,
+        marginLeft: 30,
+        marginRight: 30,
+        color: black,
+        fontSize: 25,
+        textAlign: 'center',
     }
 })
-export default DeckList
+
+function mapStateToProps (decks) {
+    return {
+      decks
+    }
+  }
+  
+  export default connect(
+    mapStateToProps,
+  )(DeckList)

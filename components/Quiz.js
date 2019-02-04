@@ -1,20 +1,58 @@
 import React from 'react'
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { black, red, green, yellow, white } from '../utils/colors'
+import { View, StyleSheet, Text, TouchableOpacity,Alert } from 'react-native'
+import { connect } from 'react-redux'
+import { black, red, green, white } from '../utils/colors'
 import Card from './Card'
 
 class Quiz extends React.Component {
+    state ={
+        cardToShow:1,
+        correct:0,
+    }
+
+    handleCorrectAnswer = ()=>{
+        this.setState((state)=>{
+            return{
+                correct: state.correct+1
+            }
+        },()=>{
+            this.state.cardToShow < this.props.deck.cards.length ? this.showNextCard() : this.handleQuizFinish()
+        })
+    }
+
+    handleIncorrectAnswer= ()=>{
+        this.state.cardToShow < this.props.deck.cards.length ? this.showNextCard() : this.handleQuizFinish()
+    }
+
+    showNextCard = ()=>{
+        this.setState((state)=>{
+            return{
+                cardToShow: state.cardToShow+1,
+            }
+        })
+    }
+
+    handleQuizFinish =()=>{
+        Alert.alert(
+            'You finshid your quiz!',
+            'your score is '+this.state.correct+'/'+this.props.deck.cards.length,
+            [
+                { text: 'okay', onPress: () => this.props.navigation.goBack(),  style: 'cancel' },
+            ],
+        )
+    }
     render() {
+        const deck = this.props.deck
         return (
             <View style={styles.container}>
-                <Text style={[{paddingTop:20}, {paddingLeft:10}]}>card number/total</Text>
-                <Card />
+                <Text style={[{paddingTop:20}, {paddingLeft:10}]}>{this.state.cardToShow}/{deck.cards.length}</Text>
+                <Card deck={deck} cardToShow={deck.cards[this.state.cardToShow-1]}/>
                 <View style={styles.container}>
-                    <TouchableOpacity style={styles.submitBtnInverted} onPress={this.doMe}>
+                    <TouchableOpacity style={styles.submitBtnInverted} onPress={this.handleCorrectAnswer}>
                         <Text style={styles.submitBtnTextInverted}>Correct</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.submitBtn} onPress={this.doMe}>
+                    <TouchableOpacity style={styles.submitBtn} onPress={this.handleIncorrectAnswer}>
                         <Text style={styles.submitBtnText}>Incorrect</Text>
                     </TouchableOpacity>
                 </View>
@@ -66,4 +104,16 @@ const styles = StyleSheet.create({
 
     },
 })
-export default Quiz
+
+
+function mapStateToProps(decks, props) {
+    const deckId = props.navigation.state.params.deckId
+    const deck = decks[deckId]
+    return {
+        deck,
+    }
+}
+
+export default connect(
+    mapStateToProps,
+)(Quiz)

@@ -1,16 +1,39 @@
 import React from 'react'
 import { Text, TouchableOpacity, KeyboardAvoidingView, TextInput, StyleSheet, Dimensions } from 'react-native'
 import { black, white } from '../utils/colors'
+import { connect } from 'react-redux'
+import { addCard } from '../action';
 
 
 class AddCard extends React.Component {
+    state = {
+        question: '',
+        answer: ''
+    }
+
+    handleChangeQuestion = (text) => {
+        this.setState(() => { return { question: text } })
+    }
+    handleChangeAnswer = (text) => {
+        this.setState(() => { return { answer: text } })
+    }
+    handleSubmit = () => {
+        this.props.dispatch(addCard({
+            deckId:this.props.deck.id,
+            question:this.state.question,
+            answer: this.state.answer,
+        }))
+        this.setState(() => {return {question:''}})
+        this.setState(() => {return {answer:''}})
+        this.props.navigation.goBack()
+    }
     render() {
         return (
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                <TextInput placeholder='Question' style={styles.textInputStyle} />
-                <TextInput placeholder='Answer' style={styles.textInputStyle} />
+                <TextInput placeholder='Question' style={styles.textInputStyle} onChangeText={this.handleChangeQuestion} value={this.state.question}/>
+                <TextInput placeholder='Answer' style={styles.textInputStyle} onChangeText={this.handleChangeAnswer} value={this.state.answer}/>
                 <TouchableOpacity style={styles.submitBtn} >
-                    <Text style={styles.submitBtnText}> Submit</Text>
+                    <Text style={styles.submitBtnText} onPress={this.handleSubmit}> Submit</Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
         )
@@ -49,16 +72,24 @@ const styles = StyleSheet.create({
         height: 45,
         borderRadius: 2,
         marginTop: 60,
-        justifyContent:'center',
+        justifyContent: 'center',
         marginLeft: 30,
         marginRight: 30,
-      },
-      submitBtnText: {
+    },
+    submitBtnText: {
         color: white,
         fontSize: 22,
         textAlign: 'center',
-      },
+    },
 })
 
-
-export default AddCard
+function mapStateToProps(decks, props) {
+    const deckId = props.navigation.state.params.deckId
+    const deck = decks[deckId]
+    return {
+        deck,
+    }
+}
+export default connect(
+    mapStateToProps,
+)(AddCard)
