@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, TouchableOpacity, KeyboardAvoidingView, TextInput, StyleSheet, Dimensions } from 'react-native'
 import { black, white } from '../utils/colors'
+import { addCardAsyncStorage } from '../utils/api'
 import { connect } from 'react-redux'
 import { addCard } from '../action';
 
@@ -18,11 +19,14 @@ class AddCard extends React.Component {
         this.setState(() => { return { answer: text } })
     }
     handleSubmit = () => {
-        this.props.dispatch(addCard({
-            deckId:this.props.deck.id,
+        const deckId = this.props.deck.id
+        const card = {
+            deckId,
             question:this.state.question,
             answer: this.state.answer,
-        }))
+        }
+        this.props.dispatch(addCard(card))
+        addCardAsyncStorage({deckId,card})
         this.setState(() => {return {question:''}})
         this.setState(() => {return {answer:''}})
         this.props.navigation.goBack()

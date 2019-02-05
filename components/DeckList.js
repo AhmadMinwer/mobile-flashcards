@@ -1,13 +1,25 @@
 import React from 'react'
-import { FlatList, View, Text, StyleSheet, Dimensions, TouchableOpacity} from 'react-native'
+import { FlatList, View, Text, StyleSheet, Dimensions, TouchableOpacity, AsyncStorage } from 'react-native'
 import { connect } from 'react-redux';
 import { white, black, gray } from '../utils/colors'
+import { receiveDecks } from '../action'
+import { FLASHCARDS_STORAGE_KEY } from '../utils/api'
 
-class DeckList extends React.Component {    
-    render() {
+class DeckList extends React.Component {
+    componentDidMount() {
         
-        if(this.props.decks && Object.keys(this.props.decks).length <= 0){
-            return(
+        AsyncStorage.getItem(FLASHCARDS_STORAGE_KEY)
+            .then((data) => {
+                const decks = JSON.parse((data))
+                console.log('finally Decks!', decks)
+                this.props.dispatch(receiveDecks(decks))
+            })
+    }
+
+    render() {
+
+        if (this.props.decks && Object.keys(this.props.decks).length <= 0) {
+            return (
                 <View style={styles.container}>
                     <Text style={styles.emptyDecksText}> There is no decks yet!</Text>
                 </View>
@@ -23,12 +35,13 @@ class DeckList extends React.Component {
                     renderItem={({ item }) => {
                         return (
                             (<TouchableOpacity
-                             style={styles.item}
-                             onPress={() => this.props.navigation.navigate(
-                                'Deck',
-                                {   deckId:item.id,
-                                }
-                              )}>
+                                style={styles.item}
+                                onPress={() => this.props.navigation.navigate(
+                                    'Deck',
+                                    {
+                                        deckId: item.id,
+                                    }
+                                )}>
                                 <Text style={styles.mainText} >{item.name}</Text>
                                 <Text style={styles.subText}>{item.cards.length}</Text>
                             </TouchableOpacity>)
@@ -46,37 +59,37 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: white,
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    listStyle:{
-        flex:1,
-        backgroundColor:white,
-        width:width,
+    listStyle: {
+        flex: 1,
+        backgroundColor: white,
+        width: width,
     },
-    mainText:{
-        marginTop:40,
+    mainText: {
+        marginTop: 40,
         marginLeft: 30,
         marginRight: 30,
         color: black,
         fontSize: 50,
         textAlign: 'center',
     },
-    subText:{
+    subText: {
         marginLeft: 50,
         marginRight: 50,
-        marginBottom:40,
+        marginBottom: 40,
         color: gray,
         fontSize: 30,
         textAlign: 'center',
     },
-    item:{
-        borderTopWidth:0.2,
+    item: {
+        borderTopWidth: 0.2,
         borderBottomWidth: 0.2,
         borderColor: gray,
     },
-    emptyDecksText:{
-        marginTop:40,
+    emptyDecksText: {
+        marginTop: 40,
         marginLeft: 30,
         marginRight: 30,
         color: black,
@@ -85,12 +98,12 @@ const styles = StyleSheet.create({
     }
 })
 
-function mapStateToProps (decks) {
+function mapStateToProps(decks) {
     return {
-      decks
+        decks
     }
-  }
-  
-  export default connect(
+}
+
+export default connect(
     mapStateToProps,
-  )(DeckList)
+)(DeckList)

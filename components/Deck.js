@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity , Alert } from 'react-native'
 import { connect } from 'react-redux'
 import { black, gray, white } from '../utils/colors'
 import TextButton from './TextButton'
+import { deleteDeckAsyncStorage } from '../utils/api'
 import { deleteDeckId } from '../action';
 
 
@@ -31,6 +32,7 @@ class Deck extends React.Component {
     handleDeleteDeck= ()=>{
         const deck = this.props.deck
         this.props.dispatch(deleteDeckId(deck.id))
+        deleteDeckAsyncStorage(deck.id)
         this.props.navigation.navigate('Home')
     }
 

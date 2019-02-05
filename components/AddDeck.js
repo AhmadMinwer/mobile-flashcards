@@ -3,7 +3,7 @@ import { TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, TextInput } f
 import { connect } from 'react-redux'
 import { black, white } from '../utils/colors'
 import { addDeck } from '../action';
-import { submitDeck, generateUID } from '../utils/api'
+import { submitDeckAsyncStorage, generateUID } from '../utils/api'
 
 
 class AddDeck extends React.Component {
@@ -23,7 +23,7 @@ class AddDeck extends React.Component {
       cards: []
     }
     this.props.dispatch(addDeck(deck))
-    submitDeck(deck)
+    submitDeckAsyncStorage({deck})
 
     this.setState(() => {
       return { deckName: '' };
