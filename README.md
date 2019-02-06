@@ -6,4 +6,4 @@ This code is for the final assessment project for Udacity's React Native course.
 
 
 ## Data 
-This project uses AsyncStorage to store the data localy on phones, and uses redux to handle it's state. 
+This project uses AsyncStorage to store data localy on phones, and uses redux to handle state. 
