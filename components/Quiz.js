@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity,Alert } from 'react-native'
 import { connect } from 'react-redux'
 import { black, red, green, white } from '../utils/colors'
 import Card from './Card'
+import { setLocalNotification,  clearLocalNotification } from '../utils/api'
 
 class Quiz extends React.Component {
     state ={
@@ -32,12 +33,25 @@ class Quiz extends React.Component {
         })
     }
 
+    handleRestartQuiz= ()=>{
+        this.setState(()=>{
+            return{
+                cardToShow:1,
+                correct:0,
+            }
+        })
+    }
+
     handleQuizFinish =()=>{
+        
+        clearLocalNotification()
+        .then(setLocalNotification)
         Alert.alert(
             'You finshid your quiz!',
             'your score is '+this.state.correct+'/'+this.props.deck.cards.length,
             [
-                { text: 'okay', onPress: () => this.props.navigation.goBack(),  style: 'cancel' },
+                { text: 'done!', onPress: () => this.props.navigation.goBack(),  style: 'cancel' },
+                { text: 'restart quiz', onPress: () => this.handleRestartQuiz() }
             ],
         )
     }

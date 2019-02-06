@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Text, TouchableOpacity , Alert } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, Alert, Animated } from 'react-native'
 import { connect } from 'react-redux'
 import { black, gray, white } from '../utils/colors'
 import TextButton from './TextButton'
@@ -8,9 +8,18 @@ import { deleteDeckId } from '../action';
 
 
 class Deck extends React.Component {
+    state = {
+        bounceValue: new Animated.Value(1),
+    }
     shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.deck ? true : false 
-      }
+        return nextProps.deck ? true : false
+    }
+    componentDidMount() {
+        Animated.sequence([
+            Animated.timing(this.state.bounceValue, { duration: 200, toValue: 1.2 }),
+            Animated.spring(this.state.bounceValue, { toValue: 1, friction: 4 })
+        ]).start()
+    }
 
     handleGoToQuiz = () => {
         const deck = this.props.deck
@@ -19,17 +28,17 @@ class Deck extends React.Component {
                 'sorry',
                 'this quiz contain no questions! do you want to add question?',
                 [
-                    { text: 'Cancel',  style: 'cancel' },
-                    { text: 'yes', onPress: () => this.props.navigation.navigate('AddCard',{deckId:deck.id}) },
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'yes', onPress: () => this.props.navigation.navigate('AddCard', { deckId: deck.id }) },
                 ],
             )
             : this.props.navigation.navigate(
                 'Quiz',
-                {deckId:deck.id}
+                { deckId: deck.id }
             )
     }
 
-    handleDeleteDeck= ()=>{
+    handleDeleteDeck = () => {
         const deck = this.props.deck
         this.props.dispatch(deleteDeckId(deck.id))
         deleteDeckAsyncStorage(deck.id)
@@ -40,14 +49,14 @@ class Deck extends React.Component {
         const deck = this.props.deck
         return (
             <View style={styles.container}>
-                <Text style={styles.mainText}>{deck.name}</Text>
+                <Animated.Text style={[styles.mainText , {transform: [{scale: this.state.bounceValue}]}]}>{deck.name}</Animated.Text>
                 <Text style={[styles.subText, { marginBottom: 70 }]}>{deck.cards.length}</Text>
 
                 <TouchableOpacity
                     style={styles.submitBtnInverted}
                     onPress={() => this.props.navigation.navigate(
                         'AddCard',
-                        { deckId:deck.id }
+                        { deckId: deck.id }
                     )}>
                     <Text style={styles.submitBtnTextInverted}> Add Card</Text>
                 </TouchableOpacity>
@@ -75,7 +84,7 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         marginRight: 30,
         color: black,
-        fontSize: 30,
+        fontSize: 50,
         textAlign: 'center',
     },
     subText: {

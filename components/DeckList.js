@@ -3,15 +3,14 @@ import { FlatList, View, Text, StyleSheet, Dimensions, TouchableOpacity, AsyncSt
 import { connect } from 'react-redux';
 import { white, black, gray } from '../utils/colors'
 import { receiveDecks } from '../action'
-import { FLASHCARDS_STORAGE_KEY } from '../utils/api'
+import { FLASHCARDS_STORAGE_KEY, setLocalNotification,clearLocalNotification } from '../utils/api'
 
 class DeckList extends React.Component {
     componentDidMount() {
-        
+        setLocalNotification()
         AsyncStorage.getItem(FLASHCARDS_STORAGE_KEY)
             .then((data) => {
                 const decks = JSON.parse((data))
-                console.log('finally Decks!', decks)
                 this.props.dispatch(receiveDecks(decks))
             })
     }

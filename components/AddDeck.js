@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, TextInput } from 'react-native'
+import { TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, TextInput,StackActions , NavigationActions } from 'react-native'
 import { connect } from 'react-redux'
 import { black, white } from '../utils/colors'
 import { addDeck } from '../action';
@@ -17,19 +17,19 @@ class AddDeck extends React.Component {
     })
   }
   handleSubmit = () => {
-    const deck={
+    const deck = {
       id: generateUID(),
       name: this.state.deckName,
       cards: []
     }
-    this.props.dispatch(addDeck(deck))
-    submitDeckAsyncStorage({deck})
 
-    this.setState(() => {
-      return { deckName: '' };
-    })
-    this.props.navigation.navigate('Home')
+    this.props.dispatch(addDeck(deck))
+    submitDeckAsyncStorage({ deck })
+    this.setState(() => { return { deckName: '' } })
+    this.props.navigation.navigate('Deck', { deckId: deck.id, })
   }
+
+
   render() {
 
 

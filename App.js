@@ -73,7 +73,7 @@ const Stack = createAppContainer(createStackNavigator({
   Deck: {
     screen: Deck,
     navigationOptions: {
-      title: 'Deck name',
+      title: 'Deck page',
     }
   },
   Quiz: {
